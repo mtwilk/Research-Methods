@@ -14,7 +14,7 @@ for (i in 1:500) {
   accuracy <- runif(m, min = 0.54, max = 0.91)
   
   # t-test for accuracy
-  result_1 <- t.test(accuracy[satellite_data == 1], accuracy[satellite_data == 0], var.equal = TRUE)
+  result_1 <- t.test(accuracy[satellite_data == 1], accuracy[satellite_data == 0], var.equal = TRUE, alternative="greater")
   p_values_accuracy[i] = result_1$p.value
 }
 
@@ -27,7 +27,7 @@ for (i in 1:500) {
   false_positive <- runif(m, min = 0.02, max = 0.45)
   
   # t-test for false positive rate
-  result_2 <- t.test(false_positive[satellite_data == 1], false_positive[satellite_data == 0], var.equal = TRUE)
+  result_2 <- t.test(false_positive[satellite_data == 1], false_positive[satellite_data == 0], var.equal = TRUE, alternative="less")
   p_values_fpr[i] = result_2$p.value
 }
 
@@ -40,7 +40,7 @@ for (i in 1:500) {
   false_negative <- runif(m, min = 0.01, max = 0.38)
   
   # t-test for false negative rate
-  result_3 <- t.test(false_negative[satellite_data == 1], false_negative[satellite_data == 0], var.equal = TRUE)
+  result_3 <- t.test(false_negative[satellite_data == 1], false_negative[satellite_data == 0], var.equal = TRUE, alternative="less")
   p_values_fnr[i] = result_3$p.value
 }
 
