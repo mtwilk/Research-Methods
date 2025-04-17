@@ -4,7 +4,7 @@ p_values_accuracy <- numeric(500)
 p_values_fpr <- numeric(500)
 p_values_fnr <- numeric(500)
 m <- 94
-set.seed(123) # Set seed for reproducibility
+
 # Loop for accuracy
 for (i in 1:500) {
   # generate data for satellite data using a normal distribution
