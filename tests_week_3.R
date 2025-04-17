@@ -4,53 +4,33 @@ p_values_accuracy <- numeric(500)
 p_values_fpr <- numeric(500)
 p_values_fnr <- numeric(500)
 m <- 94 # Maximum number of prediction models sampled
-start <- 20 # Initial sample size
+start <- 20
 set.seed(123) # Set seed for reproducibility
 
 # Loop for accuracy with sequential stopping
-for (i in 1:500) {
-  satellite_data <- rbinom(start - 1, 1, 0.5) # Generate a sample with the initial size - 1
-  accuracy <- runif(start, min = 0.54, max = 0.91) # Generate the accuracy of this point
-  for (j in start:m) {
-    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data) # Sample 1 more data point
-    accuracy <- c(runif(1, min = 0.54, max = 0.91), accuracy) # Generate the accuracy of this point
-    result_1 <- t.test(accuracy[satellite_data == 1], accuracy[satellite_data == 0], var.equal = TRUE, alternative = "greater")
-    if (result_1$p.value < 0.05) { # If the p value is significant, stop
-      break
+perform_test <- function(min_val, max_val, alternative, df, n_reps, variable) {
+  p_values <- numeric(n_reps)
+  for (i in 1:n_reps) {
+    print(i)
+    df <- rbinom(start - 1, 1, 0.5) # Generate a sample with the initial size - 1
+    variable <- runif(start, min = min_val, max = max_val) # Generate the accuracy of this point
+    for (j in start:m) {
+      df <- c(rbinom(1, 1, 0.5), df) # Sample 1 more data point
+      variable <- c(runif(1, min = min_val, max = max_val), variable) # Generate the accuracy of this point
+      result <- t.test(variable[df == 1], variable[df == 0], var.equal = TRUE, alternative = alternative)
+      if (result$p.value < 0.05) { # If the p value is significant, stop
+        break
+      }
     }
+    p_values[i] = result$p.value # Add the p value to the table of accuracies
   }
-  p_values_accuracy[i] = result_1$p.value # Add the p value to the table of accuracies
+  return(p_values)
 }
+p_values_accuracy <- perform_test(0.54, 0.91, "greater", satellite_data, 500, accuracy)
 
-# Loop for false positive rate with sequential stopping
-for (i in 1:500) {
-  satellite_data <- rbinom(start, 1, 0.5)
-  false_positive <- runif(start, min = 0.02, max = 0.45)
-  for (j in 1:(m - start)) {
-    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data)
-    false_positive <- c(runif(1, min = 0.02, max = 0.45), false_positive)
-    result_2 <- t.test(false_positive[satellite_data == 1], false_positive[satellite_data == 0], var.equal = TRUE, alternative = "less")
-    if (result_2$p.value < 0.05) {
-      break
-    }
-  }
-  p_values_fpr[i] = result_2$p.value
-}
+p_values_fpr <- perform_test(0.02, 0.45, "less", satellite_data, 500, false_positive)
 
-# Loop for false negative rate with sequential stopping
-for (i in 1:500) {
-  satellite_data <- rbinom(start, 1, 0.5)
-  false_negative <- runif(start, min = 0.01, max = 0.38)
-  for (j in 1:(m - start)) {
-    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data)
-    false_negative <- c(runif(1, min = 0.01, max = 0.38), false_negative)
-    result_3 <- t.test(false_negative[satellite_data == 1], false_negative[satellite_data == 0], var.equal = TRUE, alternative = "less")
-    if (result_3$p.value < 0.05) {
-      break
-    }
-  }
-  p_values_fnr[i] = result_3$p.value
-}
+p_values_fnr <- perform_test(0.01, 0.38, "less", satellite_data, 500, false_negative)
 
 # Plot histograms for the p-value distributions
 png("p_values_accuracy_qrp.png")
