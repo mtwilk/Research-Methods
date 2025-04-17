@@ -49,14 +49,14 @@ for (i in 1:500) {
 }
 
 # Plot histograms for the p-value distributions
-png("p_values_accuracy.png")
+png("p_values_accuracy_qrp.png")
 hist(p_values_accuracy, main = "p-values distribution for accuracy t-tests", xlab = "p-value", col = "#004cff", breaks = 20)
 dev.off()
 
-png("p_values_fpr.png")
+png("p_values_fpr_qrp.png")
 hist(p_values_fpr, main = "p-values distribution for false_positive_rate t-tests", xlab = "p-value", col = "#1dc92c", breaks = 20)
 dev.off()
 
-png("p_values_fnr.png")
+png("p_values_fnr_qrp.png")
 hist(p_values_fnr, main = "p-values distribution for false_negative_rate t-tests", xlab = "p-value", col = "#fa1c1c", breaks = 20)
 dev.off()
