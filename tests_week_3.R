@@ -4,15 +4,17 @@ p_values_accuracy <- numeric(500)
 p_values_fpr <- numeric(500)
 p_values_fnr <- numeric(500)
 m <- 94
+start <- 20
 set.seed(123) # Set seed for reproducibility
 
 # Loop for accuracy with sequential stopping
 for (i in 1:500) {
-  for (j in 1:10) {
-    satellite_data <- rbinom(m, 1, 0.5)
-    accuracy <- runif(m, min = 0.54, max = 0.91)
+  satellite_data <- rbinom(start, 1, 0.5)
+  accuracy <- runif(start, min = 0.54, max = 0.91)
+  for (j in 1:(m - start)) {
+    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data)
+    accuracy <- c(runif(1, min = 0.54, max = 0.91), accuracy)
     result_1 <- t.test(accuracy[satellite_data == 1], accuracy[satellite_data == 0], var.equal = TRUE, alternative = "greater")
-    
     if (result_1$p.value < 0.05) {
       break
     }
@@ -22,11 +24,12 @@ for (i in 1:500) {
 
 # Loop for false positive rate with sequential stopping
 for (i in 1:500) {
-  for (j in 1:10) {
-    satellite_data <- rbinom(m, 1, 0.5)
-    false_positive <- runif(m, min = 0.02, max = 0.45)
+  satellite_data <- rbinom(start, 1, 0.5)
+  false_positive <- runif(start, min = 0.02, max = 0.45)
+  for (j in 1:(m - start)) {
+    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data)
+    false_positive <- c(runif(1, min = 0.02, max = 0.45), false_positive)
     result_2 <- t.test(false_positive[satellite_data == 1], false_positive[satellite_data == 0], var.equal = TRUE, alternative = "less")
-    
     if (result_2$p.value < 0.05) {
       break
     }
@@ -36,11 +39,12 @@ for (i in 1:500) {
 
 # Loop for false negative rate with sequential stopping
 for (i in 1:500) {
-  for (j in 1:10) {
-    satellite_data <- rbinom(m, 1, 0.5)
-    false_negative <- runif(m, min = 0.01, max = 0.38)
+  satellite_data <- rbinom(start, 1, 0.5)
+  false_negative <- runif(start, min = 0.01, max = 0.38)
+  for (j in 1:(m - start)) {
+    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data)
+    false_negative <- c(runif(1, min = 0.01, max = 0.38), false_negative)
     result_3 <- t.test(false_negative[satellite_data == 1], false_negative[satellite_data == 0], var.equal = TRUE, alternative = "less")
-    
     if (result_3$p.value < 0.05) {
       break
     }
