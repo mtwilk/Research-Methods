@@ -3,23 +3,23 @@
 p_values_accuracy <- numeric(500)
 p_values_fpr <- numeric(500)
 p_values_fnr <- numeric(500)
-m <- 94
-start <- 20
+m <- 94 # Maximum number of prediction models sampled
+start <- 20 # Initial sample size
 set.seed(123) # Set seed for reproducibility
 
 # Loop for accuracy with sequential stopping
 for (i in 1:500) {
-  satellite_data <- rbinom(start, 1, 0.5)
-  accuracy <- runif(start, min = 0.54, max = 0.91)
-  for (j in 1:(m - start)) {
-    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data)
-    accuracy <- c(runif(1, min = 0.54, max = 0.91), accuracy)
+  satellite_data <- rbinom(start - 1, 1, 0.5) # Generate a sample with the initial size - 1
+  accuracy <- runif(start, min = 0.54, max = 0.91) # Generate the accuracy of this point
+  for (j in start:m) {
+    satellite_data <- c(rbinom(1, 1, 0.5), satellite_data) # Sample 1 more data point
+    accuracy <- c(runif(1, min = 0.54, max = 0.91), accuracy) # Generate the accuracy of this point
     result_1 <- t.test(accuracy[satellite_data == 1], accuracy[satellite_data == 0], var.equal = TRUE, alternative = "greater")
-    if (result_1$p.value < 0.05) {
+    if (result_1$p.value < 0.05) { # If the p value is significant, stop
       break
     }
   }
-  p_values_accuracy[i] = result_1$p.value
+  p_values_accuracy[i] = result_1$p.value # Add the p value to the table of accuracies
 }
 
 # Loop for false positive rate with sequential stopping
